@@ -1,0 +1,14 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+.language-selector-label {
+  font-weight: 500;
+  margin-right: 0.5em;
+}
+
+.language-selector-select {
+  display: inline-block;
+  min-width: 120px;
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
+  border: 1px solid #ccc;
+}

@@ -1,0 +1,124 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --techno-bg: #181a20;
+  --techno-surface: #23263a;
+  --techno-accent: #7f5af0;
+  --techno-accent2: #2cb67d;
+  --techno-text: #f4f4f4;
+  --techno-muted: #a0a0b2;
+  --techno-border: #393a4b;
+}
+
+body, #root {
+  background: var(--techno-bg) !important;
+  color: var(--techno-text);
+  min-height: 100vh;
+}
+
+
+.techno-card {
+  background: var(--techno-surface);
+  border-radius: 1.2em;
+  box-shadow: 0 4px 32px #0008;
+  border: 1.5px solid var(--techno-border);
+  padding: 2.5em 2em 2em 2em;
+  margin: 2em auto;
+  max-width: 700px;
+  min-width: 320px;
+  width: 100%;
+  color: var(--techno-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+}
+.techno-title {
+  font-family: 'Orbitron', 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  font-size: 2.5em;
+  letter-spacing: 0.04em;
+  color: var(--techno-accent);
+  text-shadow: 0 2px 16px var(--techno-accent2), 0 1px 0 #000;
+  margin-bottom: 0.5em;
+}
+
+.techno-label {
+  color: var(--techno-accent2);
+  font-weight: 600;
+  margin-bottom: 0.25em;
+  display: block;
+}
+
+.techno-input, .techno-select, .techno-textarea {
+  background: #23263a;
+  color: var(--techno-text);
+  border: 1.5px solid var(--techno-border);
+  border-radius: 0.5em;
+  padding: 0.7em 1em;
+  margin-bottom: 1em;
+  width: 100%;
+  font-size: 1.1em;
+}
+
+.techno-input:focus, .techno-select:focus, .techno-textarea:focus {
+  outline: 2px solid var(--techno-accent);
+  border-color: var(--techno-accent);
+}
+
+.techno-btn {
+  background: linear-gradient(90deg, var(--techno-accent), var(--techno-accent2));
+  color: #fff;
+  border: none;
+  border-radius: 0.5em;
+  padding: 0.7em 2em;
+  font-size: 1.1em;
+  font-weight: 700;
+  box-shadow: 0 2px 12px #7f5af055;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-bottom: 1em;
+}
+
+.techno-btn:focus {
+  outline: 2px solid var(--techno-accent2);
+}
+
+.techno-btn:active {
+  background: var(--techno-accent2);
+}
+
+.techno-result {
+  background: #23263a;
+  border: 1.5px solid var(--techno-accent2);
+  border-radius: 0.7em;
+  padding: 1.2em;
+  margin-top: 1.5em;
+  color: var(--techno-text);
+  font-size: 1.1em;
+}
+
+.techno-muted {
+  color: var(--techno-muted);
+  font-size: 0.95em;
+  margin-top: 2em;
+}
+
+@media (max-width: 900px) {
+  .techno-card {
+    padding: 1.2em 0.5em;
+    max-width: 98vw;
+    min-width: 0;
+    width: 100vw;
+  }
+  .techno-title {
+    font-size: 2em;
+  }
+}
