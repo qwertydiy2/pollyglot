@@ -164,3 +164,4 @@ dist-ssr
 
 # Million Lint
 .million
+actions-runner/*
