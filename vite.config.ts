@@ -25,5 +25,13 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
-  base: '/pollyglot/' // <-- Add this line (use your repo name)
+  base: '/pollyglot/',
+  build: {
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined // Let Vite handle chunking, or customize if needed
+      }
+    }
+  }
 });
