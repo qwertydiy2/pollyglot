@@ -25,4 +25,5 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
+  base: '/pollyglot/' // <-- Add this line (use your repo name)
 });
