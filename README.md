@@ -1,6 +1,9 @@
+
 # PollyGlot
 
-PollyGlot is a JAMstack/React app built with Vite and TypeScript. It uses the OpenAI API (gpt-4o) to translate between English, French, and Chinese. Users can input text, select source and target languages, and receive translations. The app also allows users to enter their own translation guess and objectively grades how close their guess is to the AI translation—all client-side, with no backend required.
+**Live site:** [https://qwertydiy2.github.io/pollyglot/](https://qwertydiy2.github.io/pollyglot/)
+
+PollyGlot is a web app for practicing and grading translations between English, French, and Chinese. Instantly translate text, enter your own guess, and get objective, AI-powered feedback—all in a beautiful, responsive interface.
 
 ## Features
 
@@ -10,31 +13,40 @@ PollyGlot is a JAMstack/React app built with Vite and TypeScript. It uses the Op
 - Objective grading of your guess against the AI translation
 - 100% client-side (no backend)
 
-## Getting Started
+
+## Production Deployment
+
+The app is automatically deployed to GitHub Pages on every push to `main` using GitHub Actions. Visit the link above to access the latest version.
+
+## Testing for Developers (Self-hosted Runner)
+
+To test the deployment workflow locally or in a private environment:
+
+1. Register a self-hosted runner with your GitHub repo or org.
+2. Push to `main` to trigger the `.github/workflows/selfhosted-gh-pages.yml` workflow.
+3. The app will be built and deployed using your self-hosted runner.
+
+## Local Development
 
 1. **Install dependencies:**
-
    ```bash
    npm install
    ```
-
 2. **Run the development server:**
-
    ```bash
    npm run dev
    ```
-
 3. **Open the app:**
-
-   Visit the local server URL (usually http://localhost:5173) in your browser.
+   Visit http://localhost:5173 in your browser.
 
 ## Configuration
 
 - You will need an OpenAI API key. The app will prompt you to enter it on first use or you can set it in your environment variables.
 
+
 ## License
 
-MIT
+Business Source License (BUSL)
 
 ---
 
