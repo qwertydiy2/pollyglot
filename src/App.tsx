@@ -46,6 +46,10 @@ function PollyGlotApp() {
   useEffect(() => {
     dispatch({ type: 'pollyglot/setApiKey', payload: localStorage.getItem('openai_api_key') || '' });
     dispatch({ type: 'pollyglot/setGhKey', payload: localStorage.getItem('gh_models_key') || '' });
+    const savedProvider = localStorage.getItem('pollyglot_provider');
+    if (savedProvider) {
+      dispatch({ type: 'pollyglot/setProvider', payload: savedProvider });
+    }
   }, [dispatch]);
 
   const handleTranslate = async () => {
@@ -108,38 +112,16 @@ function PollyGlotApp() {
       <section className="mb-3 w-100">
         <div className="d-flex flex-column gap-2 w-100">
           <div className="d-flex flex-row align-items-center gap-2 w-100">
-            <label className="techno-label mb-0 me-2" htmlFor="api-key">OpenAI API Key:</label>
-            <input
-              id="api-key"
-              type="password"
-              className="techno-input flex-fill"
-              value={apiKey}
-              onChange={e => dispatch({ type: 'pollyglot/setApiKey', payload: e.target.value })}
-              aria-label="OpenAI API Key"
-              style={{ minWidth: 0 }}
-            />
-            <button onClick={() => { localStorage.setItem('openai_api_key', apiKey); alert('OpenAI key saved!'); }} className="techno-btn ms-2" style={{ whiteSpace: 'nowrap' }}>Save</button>
-          </div>
-          <div className="d-flex flex-row align-items-center gap-2 w-100">
-            <label className="techno-label mb-0 me-2" htmlFor="gh-key">GitHub Models Key:</label>
-            <input
-              id="gh-key"
-              type="password"
-              className="techno-input flex-fill"
-              value={ghKey}
-              onChange={e => dispatch({ type: 'pollyglot/setGhKey', payload: e.target.value })}
-              aria-label="GitHub Models Key"
-              style={{ minWidth: 0 }}
-            />
-            <button onClick={() => { localStorage.setItem('gh_models_key', ghKey); alert('GitHub Models key saved!'); }} className="techno-btn ms-2" style={{ whiteSpace: 'nowrap' }}>Save</button>
-          </div>
-          <div className="d-flex flex-row align-items-center gap-2 w-100 mt-2">
             <label className="techno-label mb-0 me-2" htmlFor="provider-toggle">Provider:</label>
             <select
               id="provider-toggle"
               className="techno-select flex-fill"
               value={provider}
-              onChange={e => dispatch({ type: 'pollyglot/setProvider', payload: e.target.value })}
+              onChange={e => {
+                const value = e.target.value;
+                dispatch({ type: 'pollyglot/setProvider', payload: value });
+                localStorage.setItem('pollyglot_provider', value);
+              }}
               aria-label="Provider"
               style={{ minWidth: 0 }}
             >
@@ -147,6 +129,36 @@ function PollyGlotApp() {
               <option value="GitHub Models">GitHub Models</option>
             </select>
           </div>
+          {provider === 'OpenAI' && (
+            <div className="d-flex flex-row align-items-center gap-2 w-100">
+              <label className="techno-label mb-0 me-2" htmlFor="api-key">OpenAI API Key:</label>
+              <input
+                id="api-key"
+                type="password"
+                className="techno-input flex-fill"
+                value={apiKey}
+                onChange={e => dispatch({ type: 'pollyglot/setApiKey', payload: e.target.value })}
+                aria-label="OpenAI API Key"
+                style={{ minWidth: 0 }}
+              />
+              <button onClick={() => { localStorage.setItem('openai_api_key', apiKey); alert('OpenAI key saved!'); }} className="techno-btn ms-2" style={{ whiteSpace: 'nowrap' }}>Save</button>
+            </div>
+          )}
+          {provider === 'GitHub Models' && (
+            <div className="d-flex flex-row align-items-center gap-2 w-100">
+              <label className="techno-label mb-0 me-2" htmlFor="gh-key">GitHub Models Key:</label>
+              <input
+                id="gh-key"
+                type="password"
+                className="techno-input flex-fill"
+                value={ghKey}
+                onChange={e => dispatch({ type: 'pollyglot/setGhKey', payload: e.target.value })}
+                aria-label="GitHub Models Key"
+                style={{ minWidth: 0 }}
+              />
+              <button onClick={() => { localStorage.setItem('gh_models_key', ghKey); alert('GitHub Models key saved!'); }} className="techno-btn ms-2" style={{ whiteSpace: 'nowrap' }}>Save</button>
+            </div>
+          )}
         </div>
       </section>
 
