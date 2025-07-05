@@ -19,8 +19,7 @@ export default defineConfig({
       ],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime']
     }),
-    viteCompression({ algorithm: 'gzip', ext: '.gz', compressionOptions: { level: 9 }, deleteOriginFile: false }),
-    require('vite-plugin-compression2').default({ algorithm: 'gzip', ext: '.gz', compressionOptions: { level: 9 }, deleteOriginFile: false })
+    viteCompression({ algorithm: 'gzip', ext: '.gz', compressionOptions: { level: 9 }, deleteOriginFile: false })
   ],
   css: {
     postcss: './postcss.config.js',
@@ -28,9 +27,28 @@ export default defineConfig({
   base: '/pollyglot/',
   build: {
     sourcemap: false,
+    // Use esbuild for faster builds in resource-constrained environments
+    minify: 'esbuild',
+    // Warn on large chunks
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
-        manualChunks: undefined // Let Vite handle chunking, or customize if needed
+        manualChunks: {
+          // Split vendor libraries into separate chunks
+          'react-vendor': ['react', 'react-dom'],
+          'redux-vendor': ['@reduxjs/toolkit', 'react-redux'],
+          'ui-vendor': ['bootstrap'],
+          'ai-vendor': ['openai']
+        },
+        chunkFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      },
+      // Optimize treeshaking for smaller bundles
+      treeshake: {
+        preset: 'recommended',
+        propertyReadSideEffects: false,
+        tryCatchDeoptimization: false
       }
     }
   }
