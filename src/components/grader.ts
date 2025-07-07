@@ -24,7 +24,7 @@ function tokenSortRatio(a: string, b: string): number {
   const sortTokens = (s: string) =>
     s
       .toLowerCase()
-      .replace(/[.,!?;:()\[\]{}"'`~\-]/g, '')
+      .replace(/[.,!?;:()[\]{}"'`~-]/g, '')
       .split(/\s+/)
       .filter(Boolean)
       .sort()
@@ -117,7 +117,7 @@ function tokenizeSet(text: string): Set<string> {
   return new Set(
     text
       .toLowerCase()
-      .replace(/[.,!?;:()\[\]{}"'`~\-]/g, '')
+      .replace(/[.,!?;:()[\]{}"'`~-]/g, '')
       .split(/\s+/)
       .filter(Boolean)
   );
@@ -126,7 +126,7 @@ function tokenizeSet(text: string): Set<string> {
 function tokenizeArray(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[.,!?;:()\[\]{}"'`~\-]/g, '')
+    .replace(/[.,!?;:()[\]{}"'`~-]/g, '')
     .split(/\s+/)
     .filter(Boolean);
 }

@@ -1,6 +1,6 @@
 
-const { expect } = require('chai');
-const { gradeTranslation, bleuScore, jaccardSimilarity } = require('../src/components/grader');
+import { expect } from 'chai';
+import { gradeTranslation, bleuScore, jaccardSimilarity } from '../src/components/grader';
 
 describe('Translation Grader', () => {
   it('returns 100 for identical strings', () => {

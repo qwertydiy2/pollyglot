@@ -1,7 +1,6 @@
-
 import { Provider } from 'react-redux';
 import { store } from './store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { LanguageSelector } from './components/LanguageSelector';
 import { GradeResult } from './components/GradeResult';
@@ -27,7 +26,7 @@ function getSystemPrompt(source: string, target: string): string {
 }
 
 // Main Redux-powered App
-function PollyGlotApp() {
+export function PollyGlotApp() {
   const dispatch = useAppDispatch();
   const {
     sourceLang,
@@ -43,6 +42,7 @@ function PollyGlotApp() {
     
     error,
   } = useAppSelector(state => state.pollyglot);
+  const [showSent, setShowSent] = useState(false);
   useEffect(() => {
     dispatch({ type: 'pollyglot/setApiKey', payload: localStorage.getItem('openai_api_key') || '' });
     dispatch({ type: 'pollyglot/setGhKey', payload: localStorage.getItem('gh_models_key') || '' });
@@ -57,6 +57,13 @@ function PollyGlotApp() {
     dispatch({ type: 'pollyglot/setLoading', payload: true });
     dispatch({ type: 'pollyglot/setAiTranslation', payload: '' });
     dispatch({ type: 'pollyglot/setScore', payload: null });
+    setShowSent(false);
+    // Check for missing key and show error
+    if ((provider === 'OpenAI' && !apiKey) || (provider === 'GitHub Models' && !ghKey)) {
+      dispatch({ type: 'pollyglot/setError', payload: 'No API key configured. Please go to Settings and add your key.' });
+      dispatch({ type: 'pollyglot/setLoading', payload: false });
+      return;
+    }
     try {
       let translation = '';
       if (provider === 'OpenAI') {
@@ -90,6 +97,8 @@ function PollyGlotApp() {
         translation = completion.choices?.[0]?.message?.content?.trim() || '';
       }
       dispatch({ type: 'pollyglot/setAiTranslation', payload: translation });
+      setShowSent(true);
+      setTimeout(() => setShowSent(false), 2000);
       if (userGuess) dispatch({ type: 'pollyglot/setScore', payload: gradeTranslation(translation, userGuess) });
     } catch (e) {
       const err = (e && typeof e === 'object' && 'message' in e) ? (e as { message?: string }) : undefined;
@@ -108,60 +117,6 @@ function PollyGlotApp() {
   return (
     <div className="techno-card" role="main">
       <h1 className="techno-title">PollyGlot Translator</h1>
-      {/* API Key Section */}
-      <section className="mb-3 w-100">
-        <div className="d-flex flex-column gap-2 w-100">
-          <div className="d-flex flex-row align-items-center gap-2 w-100">
-            <label className="techno-label mb-0 me-2" htmlFor="provider-toggle">Provider:</label>
-            <select
-              id="provider-toggle"
-              className="techno-select flex-fill"
-              value={provider}
-              onChange={e => {
-                const value = e.target.value;
-                dispatch({ type: 'pollyglot/setProvider', payload: value });
-                localStorage.setItem('pollyglot_provider', value);
-              }}
-              aria-label="Provider"
-              style={{ minWidth: 0 }}
-            >
-              <option value="OpenAI">OpenAI</option>
-              <option value="GitHub Models">GitHub Models</option>
-            </select>
-          </div>
-          {provider === 'OpenAI' && (
-            <div className="d-flex flex-row align-items-center gap-2 w-100">
-              <label className="techno-label mb-0 me-2" htmlFor="api-key">OpenAI API Key:</label>
-              <input
-                id="api-key"
-                type="password"
-                className="techno-input flex-fill"
-                value={apiKey}
-                onChange={e => dispatch({ type: 'pollyglot/setApiKey', payload: e.target.value })}
-                aria-label="OpenAI API Key"
-                style={{ minWidth: 0 }}
-              />
-              <button onClick={() => { localStorage.setItem('openai_api_key', apiKey); alert('OpenAI key saved!'); }} className="techno-btn ms-2" style={{ whiteSpace: 'nowrap' }}>Save</button>
-            </div>
-          )}
-          {provider === 'GitHub Models' && (
-            <div className="d-flex flex-row align-items-center gap-2 w-100">
-              <label className="techno-label mb-0 me-2" htmlFor="gh-key">GitHub Models Key:</label>
-              <input
-                id="gh-key"
-                type="password"
-                className="techno-input flex-fill"
-                value={ghKey}
-                onChange={e => dispatch({ type: 'pollyglot/setGhKey', payload: e.target.value })}
-                aria-label="GitHub Models Key"
-                style={{ minWidth: 0 }}
-              />
-              <button onClick={() => { localStorage.setItem('gh_models_key', ghKey); alert('GitHub Models key saved!'); }} className="techno-btn ms-2" style={{ whiteSpace: 'nowrap' }}>Save</button>
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Language Selection */}
       <section className="d-flex gap-3 mb-3 flex-row flex-wrap justify-content-center align-items-end w-100">
         <div className="flex-fill" style={{ minWidth: 0 }}>
@@ -195,12 +150,18 @@ function PollyGlotApp() {
         >
           {loading ? 'Translating...' : 'Translate'}
         </button>
+        {showSent && (
+          <div style={{ color: 'var(--techno-accent2)', margin: '12px 0', fontWeight: 600, textAlign: 'center' }}>Translation sent!</div>
+        )}
       </section>
 
       {/* AI Translation Output */}
       {aiTranslation && (
         <section>
           <label className="techno-label" htmlFor="ai-translation">AI Translation:</label>
+          <div style={{ background: 'rgba(44,46,70,0.7)', borderRadius: 8, padding: '1em', margin: '0.5em 0 1em 0', color: 'var(--techno-text)', fontSize: '1.15em', wordBreak: 'break-word', boxShadow: '0 2px 8px #7f5af022' }}>
+            {aiTranslation}
+          </div>
           <textarea
             id="ai-translation"
             className="techno-textarea"
@@ -209,6 +170,7 @@ function PollyGlotApp() {
             rows={3}
             aria-label="AI Translation"
             readOnly
+            style={{ display: 'none' }}
           />
         </section>
       )}
