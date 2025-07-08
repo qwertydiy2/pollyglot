@@ -1,16 +1,27 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
+const OPENAI_MODELS = [
+  { value: 'gpt-4o', label: 'GPT-4o (default)' },
+  { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+  { value: 'gpt-4.1', label: 'GPT-4.1' },
+  { value: 'gpt-4.1-mini', label: 'GPT-4.1 Mini' },
+  { value: 'gpt-4.1-nano', label: 'GPT-4.1 Nano' },
+];
+const GITHUB_MODELS = OPENAI_MODELS.map(m => ({ value: `openai/${m.value}`, label: m.label }));
+
 export default function LandingPage() {
   const navigate = useNavigate();
   // Settings state
   const [provider, setProvider] = useState(localStorage.getItem('pollyglot_provider') || 'OpenAI');
   const [apiKey, setApiKey] = useState(localStorage.getItem('openai_api_key') || '');
   const [ghKey, setGhKey] = useState(localStorage.getItem('gh_models_key') || '');
+  const [model, setModel] = useState(localStorage.getItem('openai_model') || 'gpt-4o');
   const [saved, setSaved] = useState(false);
 
   const saveKeys = () => {
     localStorage.setItem('pollyglot_provider', provider);
+    localStorage.setItem('openai_model', model);
     if (provider === 'OpenAI') {
       localStorage.setItem('openai_api_key', apiKey);
     } else {
@@ -19,6 +30,8 @@ export default function LandingPage() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
+
+  const modelOptions = provider === 'OpenAI' ? OPENAI_MODELS : GITHUB_MODELS;
 
   return (
     <div className="techno-card" style={{ maxWidth: 700, margin: '2rem auto', position: 'relative', width: '100%' }}>
@@ -49,6 +62,18 @@ export default function LandingPage() {
           </select>
           {provider === 'OpenAI' && (
             <>
+              <label className="techno-label" htmlFor="openai-model">OpenAI Model:</label>
+              <select
+                id="openai-model"
+                className="techno-select w-100"
+                value={model}
+                onChange={e => setModel(e.target.value)}
+                style={{ marginBottom: 12 }}
+              >
+                {modelOptions.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
               <label className="techno-label" htmlFor="api-key">OpenAI API Key:</label>
               <input
                 id="api-key"
@@ -62,6 +87,18 @@ export default function LandingPage() {
           )}
           {provider === 'GitHub Models' && (
             <>
+              <label className="techno-label" htmlFor="gh-model">GitHub Model:</label>
+              <select
+                id="gh-model"
+                className="techno-select w-100"
+                value={model}
+                onChange={e => setModel(e.target.value)}
+                style={{ marginBottom: 12 }}
+              >
+                {modelOptions.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
               <label className="techno-label" htmlFor="gh-key">GitHub Models Key:</label>
               <input
                 id="gh-key"
@@ -76,7 +113,7 @@ export default function LandingPage() {
           <button className="techno-btn w-100" style={{ marginTop: 16 }} onClick={saveKeys}>Save</button>
           {saved && <div style={{ color: 'var(--techno-accent2)', marginTop: 8 }}>Settings saved!</div>}
           <div className="techno-muted" style={{ marginTop: 18, fontSize: 13 }}>
-            Your API keys are stored securely in your browser and never sent anywhere except OpenAI or GitHub Models.
+            Your API keys and model selection are stored securely in your browser and never sent anywhere except OpenAI or GitHub Models.
           </div>
         </div>
       </div>

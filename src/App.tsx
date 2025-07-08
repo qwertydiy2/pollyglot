@@ -43,6 +43,10 @@ export function PollyGlotApp() {
     error,
   } = useAppSelector(state => state.pollyglot);
   const [showSent, setShowSent] = useState(false);
+  const [openaiModel, setOpenaiModel] = useState(() => localStorage.getItem('openai_model') || 'gpt-4o');
+  useEffect(() => {
+    setOpenaiModel(localStorage.getItem('openai_model') || 'gpt-4o');
+  }, [provider]);
   useEffect(() => {
     dispatch({ type: 'pollyglot/setApiKey', payload: localStorage.getItem('openai_api_key') || '' });
     dispatch({ type: 'pollyglot/setGhKey', payload: localStorage.getItem('gh_models_key') || '' });
@@ -72,7 +76,7 @@ export function PollyGlotApp() {
           dangerouslyAllowBrowser: true
         });
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o',
+          model: openaiModel,
           messages: [
             { role: 'system', content: getSystemPrompt(sourceLang, targetLang) },
             { role: 'user', content: input },
