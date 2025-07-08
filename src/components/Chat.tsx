@@ -12,6 +12,7 @@ export default function Chat() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const apiKey = localStorage.getItem('openai_api_key') || '';
 
@@ -23,19 +24,34 @@ export default function Chat() {
     if (!input.trim()) return;
     setMessages(msgs => [...msgs, { role: 'user', content: input } as ChatCompletionMessageParam]);
     setInput('');
+    setError(null);
     setLoading(true);
     try {
+      // Simulate GitHub models API check (if you add support for it)
+      // For now, only OpenAI is used, but you can add a similar check for GitHub models
+      if (!apiKey) {
+        setError('OpenAI API key is missing. Please set it in settings.');
+        setLoading(false);
+        return;
+      }
       const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
       const chatMessages: ChatCompletionMessageParam[] = [
         { role: 'system', content: SYSTEM_PROMPT },
         ...messages,
         { role: 'user', content: input }
       ];
-      const completion = await openai.chat.completions.create({
-        model: localStorage.getItem('openai_model') || 'gpt-4o',
-        messages: chatMessages,
-        max_tokens: 256,
-      });
+      let completion;
+      try {
+        completion = await openai.chat.completions.create({
+          model: localStorage.getItem('openai_model') || 'gpt-4o',
+          messages: chatMessages,
+          max_tokens: 256,
+        });
+      } catch (err: any) {
+        setError('OpenAI API is currently unavailable. Please try again later.');
+        setLoading(false);
+        return;
+      }
       const aiMsg = completion.choices?.[0]?.message?.content?.trim() || 'Sorry, I could not respond.';
       setMessages(msgs => {
         const newMsgs: ChatCompletionMessageParam[] = [...msgs, { role: 'assistant', content: aiMsg } as ChatCompletionMessageParam];
@@ -45,8 +61,8 @@ export default function Chat() {
         }
         return newMsgs;
       });
-    } catch {
-      setMessages(msgs => [...msgs, { role: 'assistant', content: 'Failed to get response.' } as ChatCompletionMessageParam]);
+    } catch (err: any) {
+      setError('An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
@@ -78,6 +94,11 @@ export default function Chat() {
       </button>
       <div style={{ width: '100%', maxWidth: 600, minWidth: 0, margin: '0 auto' }}>
         <h2 className="techno-title" style={{ marginBottom: 12, wordBreak: 'break-word', fontSize: '2em' }}>PollyGlot Chat</h2>
+        {error && (
+          <div style={{ color: '#ff3860', background: '#2a1a1a', padding: '0.7em 1em', borderRadius: 8, marginBottom: 10, fontWeight: 600 }}>
+            {error}
+          </div>
+        )}
         <div style={{ flex: 1, overflowY: 'auto', width: '100%', marginBottom: 16, background: 'rgba(44,46,70,0.7)', borderRadius: 8, padding: 12, minHeight: 200 }}>
           {messages.map((msg, i) => (
             <div key={i} style={{
