@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense, lazy } from 'react';
+const TextToImageButton = lazy(() => import('./TextToImageButton').then(m => ({ default: m.TextToImageButton })));
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
@@ -107,25 +108,36 @@ export default function Chat() {
               color: msg.role === 'user' ? 'var(--techno-accent2)' : 'var(--techno-text)',
               fontWeight: msg.role === 'user' ? 600 : 400
             }}>
-              <span style={{
-                display: 'inline-block',
-                background: msg.role === 'user' ? 'rgba(44,182,125,0.15)' : 'rgba(127,90,240,0.10)',
-                borderRadius: 8,
-                padding: '0.5em 1em',
-                maxWidth: '80%',
-                wordBreak: 'break-word',
-                boxShadow: msg.role === 'user' ? '0 2px 8px #2cb67d22' : '0 2px 8px #7f5af022'
-              }}>{
-                typeof msg.content === 'string'
-                  ? msg.content
-                  : Array.isArray(msg.content)
-                    ? msg.content.map(part => {
-                        if (typeof part === 'string') return part;
-                        if ('text' in part) return part.text;
-                        return '';
-                      }).join(' ')
-                    : ''
-              }</span>
+          <span style={{
+            display: 'inline-block',
+            background: msg.role === 'user' ? 'rgba(44,182,125,0.15)' : 'rgba(127,90,240,0.10)',
+            borderRadius: 8,
+            padding: '0.5em 1em',
+            maxWidth: '80%',
+            wordBreak: 'break-word',
+            boxShadow: msg.role === 'user' ? '0 2px 8px #2cb67d22' : '0 2px 8px #7f5af022'
+          }}>
+            {
+              typeof msg.content === 'string'
+                ? msg.content
+                : Array.isArray(msg.content)
+                  ? msg.content.map(part => {
+                      if (typeof part === 'string') return part;
+                      if ('text' in part) return part.text;
+                      return '';
+                    }).join(' ')
+                  : ''
+            }
+            {/* Image button for user and assistant messages */}
+            {msg.role === 'assistant' && typeof msg.content === 'string' && msg.content.trim() && (
+              <>
+                <br />
+                <Suspense fallback={null}>
+                  <TextToImageButton prompt={msg.content} style={{ marginTop: 4 }} enabled={true} />
+                </Suspense>
+              </>
+            )}
+          </span>
             </div>
           ))}
           <div ref={chatEndRef} />
